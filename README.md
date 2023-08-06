@@ -67,3 +67,21 @@ This project was done by me as a assignment for an internship.
 <img src="Screenshots/Django WebApp - Google Chrome 04-12-2019 13_41_50.png" height="400" width="800">
 <img src="Screenshots/Django WebApp - Google Chrome 03-12-2019 20_48_45.png" height="400" width="800">
 
+# Create a virtual environment
+virtualenv my_env
+
+# Activate the virtual environment
+source my_env/bin/activate
+
+# Install the dependencies
+pip install -r requirements.txt
+
+# Set template directory
+cd django_web_app
+mkdir templates
+
+# Config your settings.py
+# Add 'templates' to your TEMPLATES_DIRS
+TEMPLATES_DIRS = [
+    os.path.join(BASE_DIR, 'templates'),
+]
