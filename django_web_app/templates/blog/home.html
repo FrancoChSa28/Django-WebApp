@@ -1,5 +1,20 @@
 {% extends "blog/base.html" %}
 {% block content %}
+    {% comment %} <h1>Filtered Posts {{ request.GET.type_file }}</h1>     {% endcomment %}
+    <form method="get" action="">
+      <div class="mt-3">
+        <label for="select-type-file" class="form-label">Filter</label>
+        <select id="select-type-file" class="form-select" aria-label="Default select example" name="type_file" onchange="this.form.submit()">
+          <option value="">All</option>
+          {% for choice in type_file %}
+              {{ choice }}
+              <option value="{{ choice.0 }}" {% if choice.0 == request.GET.type_file %}selected{% endif %}>
+                  {{ choice.1 | title }}
+              </option>
+          {% endfor %}
+        </select>
+      </div>
+    </form>
     {% for post in posts %}
       <div class="jumbotron mt-3 bg-white shadow-lg">
       <article class="media content-section shadow">
@@ -34,21 +49,21 @@
     {% if is_paginated %}
 
       {% if page_obj.has_previous %}
-        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        <a class="btn btn-outline-info mb-4" href="?page=1{% if request.GET.type_file %}&type_file={{request.GET.type_file}}{% endif %}">First</a>
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}{% if request.GET.type_file %}&type_file={{request.GET.type_file}}{% endif %}">Previous</a>
       {% endif %}
 
       {% for num in page_obj.paginator.page_range %}
         {% if page_obj.number == num %}
-          <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
+          <a class="btn btn-info mb-4" href="?page={{ num }}{% if request.GET.type_file %}&type_file={{request.GET.type_file}}{% endif %}">{{ num }}</a>
         {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-          <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+          <a class="btn btn-outline-info mb-4" href="?page={{ num }}{% if request.GET.type_file %}&type_file={{request.GET.type_file}}{% endif %}">{{ num }}</a>
         {% endif %}
       {% endfor %}
 
       {% if page_obj.has_next %}
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}{% if request.GET.type_file %}&type_file={{ request.GET.type_file }}{% endif %}">Next</a>
+        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.type_file %}&type_file={{ request.GET.type_file }}{% endif %}">Last</a>
       {% endif %}
 
     {% endif %}

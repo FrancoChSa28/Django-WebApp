@@ -1,4 +1,4 @@
-from typing import Any, Optional, Sequence
+from typing import Any, Dict, Optional, Sequence
 from django.db.models.query import QuerySet
 from django.shortcuts import redirect, render, get_object_or_404
 from django.http import HttpResponse
@@ -48,6 +48,19 @@ class PostListView(ListView):
     context_object_name = 'posts'
     ordering = ['-date_posted']
     paginate_by = 2
+
+    def get_queryset(self):
+        query_set = super().get_queryset()
+        type_filter = self.request.GET.get('type_file', None)
+        if type_filter:
+            return query_set.filter(type_file=type_filter)
+        else:
+            return query_set
+    
+    def get_context_data(self, **kwargs: Any):
+        context = super().get_context_data(**kwargs)
+        context['type_file'] = Post.TYPE_FILE
+        return context
 
 class UserPostListView(ListView):
     model = Post
