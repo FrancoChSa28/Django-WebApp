@@ -5,7 +5,8 @@ from .views import (
     PostCreateView,
     PostUpdateView,
     PostDeleteView,
-    UserPostListView
+    UserPostListView,
+    PostLikeToggle
 )
 from . import views
 
@@ -19,4 +20,5 @@ urlpatterns = [
     path('media/Files/<int:pk>',PostDeleteView.as_view(),name='post-delete' ),
     path('search/',views.search,name='search' ),
     path('about/', views.about, name='blog-about'),
+    path('post/<int:pk>/like/', PostLikeToggle.as_view(), name='like-post'),
 ]

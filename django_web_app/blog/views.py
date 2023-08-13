@@ -1,7 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from typing import Any, Optional, Sequence
+from django.db.models.query import QuerySet
+from django.shortcuts import redirect, render, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
+from django.views import View
 from django.views.generic import (
     ListView,
     DetailView,
@@ -13,7 +16,7 @@ from .models import Post
 import operator
 from django.urls import reverse_lazy
 from django.contrib.staticfiles.views import serve
-
+from django.contrib import messages
 from django.db.models import Q
 
 
@@ -45,7 +48,6 @@ class PostListView(ListView):
     context_object_name = 'posts'
     ordering = ['-date_posted']
     paginate_by = 2
-
 
 class UserPostListView(ListView):
     model = Post
@@ -103,3 +105,28 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 def about(request):
     return render(request, 'blog/about.html', {'title': 'About'})
+
+class PostLikeToggle(LoginRequiredMixin, UserPassesTestMixin, View):
+
+    def test_func(self):
+        if self.kwargs.get('pk') is not None:
+            post = Post.objects.get(pk=self.kwargs.get('pk'))
+            if self.request.user == post.author:
+                return False
+            else:
+                return True
+        return False
+    
+    def post(self, request, pk, *args, **kwargs):
+        post = get_object_or_404(Post, pk=pk)
+        user = self.request.user
+        if user.is_authenticated:
+            if user in post.likes.all():
+                post.likes.remove(user)
+            else:
+                post.likes.add(user)
+            post.save()
+            return redirect('post-detail', pk=pk)
+        else:
+            messages.warning(request, 'You need to login first')
+            return redirect('login')
